@@ -1,0 +1,51 @@
+<html>
+<head>
+
+</head>
+<body>
+	제목 : <input type="text" value="" id="title"><br>
+	내용 : <textarea id="content" rows="8" cols="40"></textarea>
+	<input type="button" value="수정완료" id="updateBtn">
+	<input type="button" value="취소" id="goBackToListPageBtn">
+</body>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+	let no = location.href.split("?")[1];
+
+	$.ajax({
+		url:`/getSinglePost?no=${no}`,
+		success:function(response){
+			let post = response[0];
+			console.log(post.title, post.content);
+			$("#title").val(post.title);
+			$("#content").val(post.content);
+		}
+	});
+
+	$("#updateBtn").click(function(){
+		$.ajax({
+			url:`/updatePost`,
+			type:'PUT',
+			data:{
+				no : no,
+				title : $("#title").val(),
+				content : $("#content").val(),
+			},
+			success:function(response){
+				if(response.affectedRows==1) {
+					alert("글 수정 완료");
+					location.href = "/postListPage"
+				}
+				else {
+					alert("서버 에러");
+				}
+			},
+		});
+	});
+
+	$("#goBackToListPageBtn").click(function(){
+		location.href = "/postListPage"
+	});
+</script>
+</html>

@@ -1,0 +1,68 @@
+<html>
+<head>
+
+</head>
+<body>
+	<div id="responseArea"></div>
+	<input type="button" id="goToWritePage" value="글쓰기">
+	<input type="button" id="deleteAllPost" value="전체삭제">
+</body>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+	$.ajax({
+		url:`/getPostList`,
+		success:function(response){
+			for(let i=0;i<response.length;i++) {
+				let obj = response[i];
+				$("#responseArea").append(`<span id="post_${obj.no}">${obj.no}. ${obj.title} :  ${obj.content}
+				<input type="button" value="삭제" onclick="deletePost(${obj.no})">
+				<input type="button" value="수정" onclick="moveToUpdatePage(${obj.no})"><br><span>`);
+			}
+		}
+	});
+
+	function deletePost(no) {
+		$.ajax({
+			url:`/deletePost`,
+			type:'DELETE',
+			data:{
+				no : no,
+			},
+			success:function(response){
+				console.log(response);
+				if(response.affectedRows==1) {
+					alert("삭제 완료");
+					$(`#post_${no}`).remove();
+				}
+				else {
+					alert("서버 에러");
+				}
+			},
+		});
+		console.log("delete", no);
+	}
+
+	function moveToUpdatePage(no) {
+		location.href = "/postUpdatePage?" + no;
+	}
+
+	$("#goToWritePage").click(function(){
+		location.href = "/postWritePage";
+	});
+
+	$("#deleteAllPost").click(function(){
+		$.ajax({
+			url:`/deleteAllPost`,
+			type:'DELETE',
+			success:function(response){
+				if(response.affectedRows!=null && response.affectedRows!=undefined) {
+					console.log(response);
+					alert("전체 삭제 완료");
+					$("#responseArea").html("");
+				}
+			},
+		});
+	});
+</script>
+</html>

@@ -1,0 +1,39 @@
+<html>
+<head>
+
+</head>
+<body>
+	제목 : <input type="text" value="" id="title"><br>
+	내용 : <textarea id="content" rows="8" cols="40"></textarea>
+	<input type="button" value="글쓰기" id="writeBtn">
+	<input type="button" value="취소" id="goBackToListPageBtn">
+</body>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+
+	$("#writeBtn").click(function(){
+		$.ajax({
+			url:`/writePost`,
+			type:'POST',
+			data:{
+				title : $("#title").val(),
+				content : $("#content").val(),
+			},
+			success:function(response){
+				if(response.affectedRows==1) {
+					alert("글 등록 완료");
+					location.href = "/postListPage"
+				}
+				else {
+					alert("서버 에러");
+				}
+			},
+		});
+	});
+
+	$("#goBackToListPageBtn").click(function(){
+		location.href = "/postListPage"
+	});
+</script>
+</html>
